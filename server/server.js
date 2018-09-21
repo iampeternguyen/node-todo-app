@@ -30,8 +30,8 @@ app.get('/todos', (req, res) => {
 
 app.get('/todo/:id', (req, res) => {
 	Todo.findById(req.params.id)
-		.then(todo => res.send(todo))
-		.catch(err => res.status(400).send(''));
+		.then(todo => (todo ? res.send({ todo }) : res.status(404).send('')))
+		.catch(err => res.status(404).send(''));
 });
 
 app.listen('3000', () => {
