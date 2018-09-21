@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const { ObjectID } = require('mongodb');
 
 const { mongoose } = require('./db/mongoose');
 const { Todo } = require('./models/todo');
@@ -30,9 +31,25 @@ app.get('/todos', (req, res) => {
 });
 
 app.get('/todo/:id', (req, res) => {
-	Todo.findById(req.params.id)
-		.then(todo => (todo ? res.send({ todo }) : res.status(404).send('')))
-		.catch(err => res.status(404).send(''));
+	if (ObjectID.isValid(req.params.id)) {
+		Todo.findById(req.params.id)
+			.then(todo => (todo ? res.send({ todo }) : res.status(404).send('todo not found')))
+			.catch(err => res.status(404).send('todo not found'));
+	} else {
+		res.status(404).send('todo not found');
+	}
+});
+
+app.delete('/todo/:id', (req, res) => {
+	if (ObjectID.isValid(req.params.id)) {
+		Todo.findOneAndDelete({ _id: req.params.id })
+			.then(todo => {
+				todo ? res.send({ todo }) : res.status(404).send('could not find todo to delete');
+			})
+			.catch(err => res.status(404).send('could not find todo to delete'));
+	} else {
+		res.status(404).send('could not find todo to delete');
+	}
 });
 
 app.listen(port, () => {
