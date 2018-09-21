@@ -28,6 +28,12 @@ app.get('/todos', (req, res) => {
 		.catch(err => res.status(400).send(err));
 });
 
+app.get('/todo/:id', (req, res) => {
+	Todo.findById(req.params.id)
+		.then(todo => res.send(todo))
+		.catch(err => res.status(400).send(''));
+});
+
 app.listen('3000', () => {
 	console.log('Listening on port 3000');
 });
